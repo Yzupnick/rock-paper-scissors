@@ -37,21 +37,19 @@ var choiceWins = function(choice1, choice2){
     }
 };
 
-var makeChoiceFunction = function(player, choice){
+var makeChoiceFunction = function(choice){
     return function(event){
       var game = currentGame();
-      console.log(game);
       if (game === undefined ||  (game.player1choice && game.player2choice)){
-          console.log("I'm here");
           var newGame = {
             started: new Date() // current time
           };
-          newGame[player] = choice;
+          newGame[currentPlayer() + 'choice'] = choice;
           Games.insert(newGame);
       }
       else{
           var updateObj = {};
-          updateObj[player] = choice;
+          updateObj[currentPlayer() + 'choice'] = choice;
           Games.update(game._id, {
             $set: updateObj 
           });
@@ -67,13 +65,29 @@ var currentGame = function(){
     return undefined;
 };
 
-if (Meteor.isClient) {
+var currentPlayer = function(){
+  var player = Iron.Location.get().path.replace('/','');
+  return player;
+};
 
+Router.route('/', function () {
+  this.render('home');
+});
+
+Router.route('/player1', function () {
+  this.render('player');
+});
+
+Router.route('/player2', function () {
+  this.render('player');
+});
+
+if (Meteor.isClient) {
   Template.choose.helpers({
       current_choice: function(){
           var game = currentGame();
-          if (game && game.player1choice){
-              return game.player1choice;
+          if (game && game[currentPlayer() + 'choice']){
+              return game[currentPlayer() + 'choice'];
           }
           else{
               return 'You have not chosen';
@@ -90,11 +104,10 @@ if (Meteor.isClient) {
       }
   });
 
-  console.log(Meteor);
-  Template.body.events({
-    "click .rock": makeChoiceFunction('player1choice', 'rock'),
-    "click .paper": makeChoiceFunction('player1choice', 'paper'),
-    "click .scissors": makeChoiceFunction('player1choice', 'scissors')
+  Template.player.events({
+    "click .rock": makeChoiceFunction( 'rock'),
+    "click .paper": makeChoiceFunction('paper'),
+    "click .scissors": makeChoiceFunction('scissors')
   });
 
 }

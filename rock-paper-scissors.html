@@ -3,12 +3,15 @@
 </head>
 
 <body>
+</body>
+
+<template name="player">
   {{> choose}}
   <button class="rock">Rock</button>
   <button class="paper">Paper</button>
   <button class="scissors">Scissors</button>
   {{> history}}
-</body>
+</template>
 
 <template name="choose">
     <p> {{current_choice}}</p>
@@ -18,4 +21,9 @@
     {{#each games}}
     <p> Winner: {{winner}} </p>
     {{/each}}
+</template>
+
+<template name="home">
+    <a href="/player1"> player 1</a>
+    <a href="/player2"> player 2</a>
 </template>
