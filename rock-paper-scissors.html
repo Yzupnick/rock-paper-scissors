@@ -7,13 +7,15 @@
   <button class="rock">Rock</button>
   <button class="paper">Paper</button>
   <button class="scissors">Scissors</button>
-  {{> score}}
+  {{> history}}
 </body>
 
 <template name="choose">
     <p> {{current_choice}}</p>
 </template>
 
-<template name="score">
-  <p>The score is 0-0</p>
+<template name="history">
+    {{#each games}}
+    <p> Winner: {{winner}} </p>
+    {{/each}}
 </template>

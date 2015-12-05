@@ -81,6 +81,16 @@ if (Meteor.isClient) {
       }
   });
 
+  Template.history.helpers({
+      winner: function(){
+          return winner(this);
+      },
+      games: function(){
+          return Games.find({}, {sort:{started: -1}});
+      }
+  });
+
+  console.log(Meteor);
   Template.body.events({
     "click .rock": makeChoiceFunction('player1choice', 'rock'),
     "click .paper": makeChoiceFunction('player1choice', 'paper'),
@@ -89,10 +99,3 @@ if (Meteor.isClient) {
 
 }
 
-if (Meteor.isServer) {
-  Meteor.startup(function () {
-    // code to run on server at startup
-
-  });
-
-}
