@@ -3,10 +3,10 @@ Games = new Mongo.Collection("games");
 var winner = function(game){
     var win = choiceWins(game.player1choice, game.player2choice);
     if (win ===1) {
-        return 'Player 1';
+        return 'player1';
     }
     else if (win === -1){
-        return 'Player 2';
+        return 'player2';
     }
     else {
         return 'Tie';
@@ -37,22 +37,30 @@ var choiceWins = function(choice1, choice2){
     }
 };
 
+
+var createGame = function(){
+      var newGame = {
+        started: new Date() // current time
+      };
+      Games.insert(newGame);
+      return currentGame();
+};
+
 var makeChoiceFunction = function(choice){
     return function(event){
       var game = currentGame();
       if (game === undefined ||  (game.player1choice && game.player2choice)){
-          var newGame = {
-            started: new Date() // current time
-          };
-          newGame[currentPlayer() + 'choice'] = choice;
-          Games.insert(newGame);
+          createGame();
+          game = currentGame();
       }
-      else{
-          var updateObj = {};
-          updateObj[currentPlayer() + 'choice'] = choice;
-          Games.update(game._id, {
-            $set: updateObj 
-          });
+      var updateObj = {};
+      updateObj[currentPlayer() + 'choice'] = choice;
+      Games.update(game._id, {
+        $set: updateObj 
+      });
+      game = currentGame();
+      if (game === undefined ||  (game.player1choice && game.player2choice)){
+          createGame();
       }
     };
 };
@@ -97,10 +105,31 @@ if (Meteor.isClient) {
 
   Template.history.helpers({
       winner: function(){
-          return winner(this);
+          var winPlayerString = winner(this);
+          if (winPlayerString === 'Tie'){
+              return "It was a tie!";
+          }
+          else if (winPlayerString === currentPlayer()){
+              return "You Won :)";
+          }
+          else {
+              return "You Lost :(";
+          }
       },
       games: function(){
-          return Games.find({}, {sort:{started: -1}});
+          var current = currentGame();
+          var currentId;
+          if (current){
+              currentId = current._id;
+          }
+          else{
+              currentId = undefined;
+          }
+          return Games.find({_id:{$ne:currentId}}, {sort:{started: -1}});
+      },
+      gameNumber: function(number){
+          return Games.find().count() - number - 1;
+
       }
   });
 
