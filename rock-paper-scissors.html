@@ -20,6 +20,9 @@
 <template name="history">
     {{#each games}}
     <p> Game {{gameNumber @index}}: {{winner}} </p>
+    <p>-- Player 1 played {{player1choice}}</p>  
+    <p>-- Player 2 played {{player2choice}}</p>  
+    <hr/>
     {{/each}}
 </template>
 
